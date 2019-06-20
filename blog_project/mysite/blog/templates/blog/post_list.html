@@ -1,0 +1,65 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="infinite-container">
+<div class="centerstage">
+
+
+    {% for post in post_list %}
+    <div class="container">
+      <div class="align-items-center">
+        <article class="post">
+          <div class="post-cont">
+            <img class="post-img" src="{{ post.image }}" alt="{{ post.title }}">
+            <div class="text-container">
+              <h2 class="post-tit"><a href="{{post.link}}">{{ post.title }}</a></h2>
+              <div class="row">
+                <h5>Author: {{post.author}}</h5>
+                <div class="date">
+                    <p>Published on: {{ post.published_date|date:"D M Y"}}</p>
+                </div>
+                <!-- <a class = "comments" href="{% url 'post_detail' pk=post.pk %}">Comments: {{ post.approve_comments.count }}</a> -->
+              </div>
+
+              <p>{{post.text}}</p>
+              <a href="{{post.link}}">Read More</a>
+
+            </div>
+            </div>
+
+        </article>
+        </div>
+        </div>
+    {% endfor %}
+
+</div>
+</div>
+<div class="loading" style="display: none;">
+    Loading...
+  </div>
+
+  {% if page_obj.has_next %}
+   <a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}">More</a>
+ {% endif %}
+
+{% if page_obj.has_previous %}
+ <nav aria-label="Page navigation">
+   <ul class="pagination">
+     <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_previous_number }}">Previous</a></li>
+     <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+   </ul>
+ </nav>
+ {% endif %}
+
+  <script>
+    var infinite = new Waypoint.Infinite({
+      element: $('.infinite-container')[0],
+      onBeforePageLoad: function () {
+        $('.loading').show();
+      },
+      onAfterPageLoad: function ($items) {
+        $('.loading').hide();
+      }
+    });
+  </script>
+{% endblock %}
