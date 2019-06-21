@@ -76,8 +76,11 @@ def populate():
 
     for article in fetcher.fetch():
 
-        pst = Post.objects.get_or_create(author='Newsarama',  title=article.title, text = article.content, published_date=article.date, categories = article.categories, link = article.link, tags = article.tags, image = article.image )[0]
-
+        try:
+            pst = Post.objects.get_or_create(author='Newsarama',  title=article.title, text = article.content, published_date=article.date, categories = article.categories, link = article.link, tags = article.tags, image = article.image )[0]
+            print("found new article")
+        except django.db.utils.IntegrityError:
+            print("duplicate found")
 
 
 

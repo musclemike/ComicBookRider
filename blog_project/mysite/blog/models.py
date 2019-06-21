@@ -11,7 +11,7 @@ class Post(models.Model):
     author = models.CharField(max_length=200)
     categories = models.CharField(default= "ComicBookRider", max_length=200)
     tags = models.CharField(default= "", max_length=200)
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, unique = True)
     text = models.TextField()
     #created_date = models.DateTimeField(blank=True, null=True)
     published_date = models.DateTimeField(blank=True, null=True)

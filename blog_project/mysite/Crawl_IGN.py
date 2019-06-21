@@ -50,7 +50,11 @@ class ArticleFetcher():
                 art_doc = BeautifulSoup(article_response.text, "html.parser")
 
                 content = art_doc.select("p")[0].text
-                date = doc.select_one("a h3").attrs["data-timeago"]
+                try:
+                    date = art_doc.select_one(".article-publish-date meta").attrs["content"]
+                except AttributeError:
+                    print(title, " Date not found")
+                    continue
                 #date = date.replace("T", " ")
                 #date = date[:-6]
 
@@ -63,7 +67,7 @@ def populate():
 
     #blogid = 1
     #counter = 0
-    nono_list = ["Deals", "Sales", "Gift Card", "Today Only", "Sale"]
+    nono_list = ["Deals", "Sales", "Gift Card", "Today Only", "Sale", "Amazon Prime"]
 
     for article in fetcher.fetch():
         check = any(item in article.title for item in nono_list)
@@ -76,8 +80,11 @@ def populate():
 
             #print(article.date+"\n"+article.image+"\n"+article.title+"\n"+article.content+"\n"+article.link)
             #print(article.date+"\n"+article.image+"\n"+article.title+"\n"+article.content+"<br><a href="+article.link+">Read More</a><br>\n\n")
-            pst = Post.objects.get_or_create(author='IGN',  title=article.title, text = article.content, published_date=article.date, categories = article.categories, link = article.link, tags = article.tags, image = article.image )[0]
-
+            try:
+                pst = Post.objects.get_or_create(author='IGN',  title=article.title, text = article.content, published_date=article.date, categories = article.categories, link = article.link, tags = article.tags, image = article.image )[0]
+                print("found new article")
+            except django.db.utils.IntegrityError:
+                print("duplicate found")
             #counter += 1
             #blogid += 1
 

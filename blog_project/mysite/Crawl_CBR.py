@@ -46,7 +46,6 @@ class ArticleFetcher():
             for article in doc.select("article"):
                 if count == 19 :
                     break
-                count += 1
                 try:
                     image = article.select_one("source").attrs["data-srcset"]
                 except KeyError:
@@ -67,12 +66,14 @@ class ArticleFetcher():
                 art_doc = BeautifulSoup(article_response.text, "html.parser")
 
                 content = art_doc.select("p")[0].text
-                date = art_doc.select_one("time").attrs["datetime"]
+                date = doc.select(".bc-date")[count].attrs["datetime"]
                 image = (image.split())[0]
 
 
 
+
                 yield CrawledArticle(image, link, title, content, date, categories, tags)
+                count += 1
 
 
 def populate():
@@ -80,8 +81,13 @@ def populate():
     fetcher = ArticleFetcher()
 
     for article in fetcher.fetch():
+        #if Post.objects.filter(title=article.title).exists():
 
-        pst = Post.objects.get_or_create(author='CBR', title=article.title, text = article.content, published_date=article.date, categories = article.categories, link = article.link, tags = article.tags, image = article.image )[0]
+        try:
+            pst = Post.objects.get_or_create(author='CBR',  title=article.title, text = article.content, published_date=article.date, categories = article.categories, link = article.link, tags = article.tags, image = article.image )[0]
+            print("found new article")
+        except django.db.utils.IntegrityError:
+            print("duplicate found")
 
 
 
